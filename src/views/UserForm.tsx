@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import { Button } from "@rneui/themed";
+import { UsersContext } from "../context/UsersContext";
 
 export default function UserForm({ route, navigation }: { route: any, navigation: any }) {
 
   const [user, setUser] = useState(route.params ? route.params : {});
 
+  const { users, dispatch } = useContext(UsersContext);
 
   return (
     <View>
@@ -21,7 +23,7 @@ export default function UserForm({ route, navigation }: { route: any, navigation
       <View style={styles.form}>
         <Text style={styles.text}>Email</Text>
         <TextInput
-          onChangeText={email => setUser({ ...user,  email})}
+          onChangeText={email => setUser({ ...user, email })}
           placeholder={"Type The Email"}
           value={user.email}
           style={styles.input}
@@ -30,15 +32,22 @@ export default function UserForm({ route, navigation }: { route: any, navigation
       <View style={styles.form}>
         <Text style={styles.text}>Avatar url</Text>
         <TextInput
-          onChangeText={avatarUrl => setUser({ ...user,  avatarUrl})}
+          onChangeText={avatarUrl => setUser({ ...user, avatarUrl })}
           placeholder={"Type The Avatar url"}
           value={user.avatarUrl}
           style={styles.input}
         />
         <Button title={"Save"} onPress={() => {
-          navigation.goBack()
-        }}
-        />
+          {
+            dispatch({
+              type: user.id ? "UPDATE_ACCOUNT" : "CREATE_ACCOUNT",
+              payload: {
+                user: user
+              }
+            });
+            navigation.goBack();
+          }
+        }} />
       </View>
     </View>
   );
